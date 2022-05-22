@@ -14,7 +14,8 @@ public class ProducerBanking {
 		Scanner scanner = new Scanner(System.in);
 
 		Properties props = new Properties();
-		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "10.0.2.196:9092,10.0.2.197:9093");
+//		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "10.0.2.196:9092,10.0.2.197:9093");
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "10.0.2.195:9092");
 		props.put(ProducerConfig.CLIENT_ID_CONFIG, "producer-banking");
 //		props.put(ProducerConfig.ACKS_CONFIG, "all");
 //		props.put(ProducerConfig.RETRIES_CONFIG, 3);

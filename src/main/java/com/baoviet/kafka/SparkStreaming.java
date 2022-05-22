@@ -30,13 +30,14 @@ public class SparkStreaming {
 		JavaStreamingContext streamingContext = new JavaStreamingContext(sparkConf, Durations.seconds(3));
 
 		Map<String, Object> kafkaParams = new HashMap<>();
-		kafkaParams.put("bootstrap.servers", "10.0.2.196:9092,10.0.2.197:9093");
+//		kafkaParams.put("bootstrap.servers", "10.0.2.196:9092,10.0.2.197:9093");
+		kafkaParams.put("bootstrap.servers", "10.0.2.195:9092");
 		kafkaParams.put("key.deserializer", StringDeserializer.class);
 		kafkaParams.put("value.deserializer", StringDeserializer.class);
 		kafkaParams.put("group.id", "kafka-spark-streaming");
-		kafkaParams.put("auto.offset.reset", "latest");
-		kafkaParams.put("enable.auto.commit", false);
-		Collection<String> topics = Arrays.asList("valid");
+//		kafkaParams.put("auto.offset.reset", "latest");
+//		kafkaParams.put("enable.auto.commit", false);
+		Collection<String> topics = Arrays.asList("valid", "suspicious");
 
 		JavaInputDStream<ConsumerRecord<String, String>> messages = KafkaUtils.createDirectStream(
 				streamingContext,
