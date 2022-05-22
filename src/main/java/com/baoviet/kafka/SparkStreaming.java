@@ -11,13 +11,10 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.serializer.KryoSerializer;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
-import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka010.ConsumerStrategies;
 import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
-
-import scala.Tuple2;
 
 public class SparkStreaming {
 
@@ -39,17 +36,18 @@ public class SparkStreaming {
 //		kafkaParams.put("enable.auto.commit", false);
 		Collection<String> topics = Arrays.asList("valid", "suspicious");
 
-		JavaInputDStream<ConsumerRecord<String, String>> messages = KafkaUtils.createDirectStream(
-				streamingContext,
+		JavaInputDStream<ConsumerRecord<String, String>> messages = KafkaUtils.createDirectStream(streamingContext,
 				LocationStrategies.PreferConsistent(),
 				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
-		JavaPairDStream<String, Integer> wordCounts = messages
-				.mapToPair(record -> new Tuple2<>(record.key(), record.value()))
-				.map(tuple2 -> tuple2._2())
-				.flatMap(x -> Arrays.asList(x.split("\\s+")).iterator())
-				.mapToPair(s -> new Tuple2<>(s, 1))
-				.reduceByKey((i1, i2) -> i1 + i2);
-		wordCounts.print();
+
+		messages.foreachRDD(rdd -> {
+			rdd.foreachPartition(iterator -> {
+				while (iterator.hasNext()) {
+					ConsumerRecord<String, String> next = iterator.next();
+					System.out.println(next.value());
+				}
+			});
+		});
 
 		streamingContext.start();
 		streamingContext.awaitTermination();
